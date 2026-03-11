@@ -18,7 +18,7 @@ export function Portfolio() {
   const { data: portfolioData, isLoading, isError } = usePortfolio();
   const { data: fundsMap } = useAllFunds();
   const [modal, setModal] = useState<ModalState>({ type: 'none' });
-  const [activeTab, setActiveTab] = useState<'funds' | 'orders'>('funds');
+  const [activeTab, setActiveTab] = useState<'funds' | 'orders' | 'transfers'>('funds');
 
   const enrichedItems = useMemo(() => {
     if (!portfolioData || !fundsMap) return [];
@@ -57,9 +57,14 @@ export function Portfolio() {
           onClick={() => setActiveTab('orders')}
         >
           Ordenes
+          {activeTab === 'orders' && <span className={styles.tabDot} />}
         </button>
-        <button type="button" className={styles.tab} disabled>
+        <button type="button"
+          className={`${styles.tab} ${activeTab === 'transfers' ? styles.tabActive : ''}`}
+          onClick={() => setActiveTab('transfers')}
+        >
           Traspasos en curso
+          {activeTab === 'transfers' && <span className={styles.tabDot} />}
         </button>
       </div>
 
@@ -88,6 +93,12 @@ export function Portfolio() {
       {activeTab === 'orders' && (
         <div className={styles.empty}>
           <p>No hay ordenes recientes</p>
+        </div>
+      )}
+
+      {activeTab === 'transfers' && (
+        <div className={styles.empty}>
+          <p>No hay traspasos en curso</p>
         </div>
       )}
 

@@ -15,13 +15,10 @@ Modal({ open, onClose, title, children, footer }: ModalProps) {
 
   useEffect(() => {
     const dialog = dialogRef.current;
-    if (!dialog) return;
+    if (!dialog || open === dialog.open) return;
 
-    if (open && !dialog.open) {
-      dialog.showModal();
-    } else if (!open && dialog.open) {
-      dialog.close();
-    }
+    if (open) dialog.showModal();
+    else dialog.close();
   }, [open]);
 
   useEffect(() => {
