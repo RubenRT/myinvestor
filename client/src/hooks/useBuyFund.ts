@@ -1,20 +1,11 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { buyFund } from '@/services/funds.service';
-import { useNotificationStore } from '@/stores/notification.store';
+import { usePortfolioMutation } from '@/hooks/usePortfolioMutation';
 
 export function useBuyFund() {
-  const queryClient = useQueryClient();
-  const addNotification = useNotificationStore((s) => s.addNotification);
-
-  return useMutation({
+  return usePortfolioMutation({
     mutationFn: ({ fundId, quantity }: { fundId: string; quantity: number }) =>
       buyFund(fundId, quantity),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['portfolio'] });
-      addNotification('success', 'Compra realizada con exito');
-    },
-    onError: (error: Error) => {
-      addNotification('error', error.message || 'Error al realizar la compra');
-    },
+    successMessage: 'Compra realizada con exito',
+    errorMessage: 'Error al realizar la compra',
   });
 }

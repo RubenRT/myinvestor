@@ -19,3 +19,5 @@ export const CATEGORY_ORDER: Category[] = [
 export const MAX_BUY_AMOUNT_EUR = 10_000;
 
 export const DEFAULT_PAGE_SIZE = 10;
+
+export const REQUEST_TIMEOUT_MS = 15_000;
