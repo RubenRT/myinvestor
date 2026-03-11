@@ -1,0 +1,73 @@
+.item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-md);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-weight: 600;
+  font-size: var(--font-size-md);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.values {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.totalValue {
+  font-weight: 600;
+  font-size: var(--font-size-md);
+}
+
+.gain {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-xs);
+  font-size: var(--font-size-sm);
+}
+
+.gainPositive {
+  color: var(--color-success);
+}
+
+.gainNegative {
+  color: var(--color-danger);
+}
+
+.actions {
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .item {
+    padding: var(--space-sm) var(--space-md);
+  }
+}

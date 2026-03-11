@@ -1,0 +1,25 @@
+.header {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.header:hover {
+  color: var(--color-primary);
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.arrow {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  transition: color 0.15s;
+}
+
+.active {
+  color: var(--color-primary);
+}

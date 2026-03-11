@@ -1,0 +1,59 @@
+.info {
+  margin-bottom: var(--space-md);
+}
+
+.fundName {
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--space-xs);
+}
+
+.currentPosition {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.fieldWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.fieldLabel {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.select {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  background: var(--color-bg-white);
+  transition: border-color 0.15s;
+  appearance: auto;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.selectError {
+  border-color: var(--color-danger);
+}
+
+.error {
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+}
