@@ -2,6 +2,7 @@ import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import { FundList } from '@/components/funds/FundList/FundList';
 import { Portfolio } from '@/components/portfolio/Portfolio/Portfolio';
 import { ToastContainer } from '@/components/ui/Toast/Toast';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary/ErrorBoundary';
 import styles from './App.module.css';
 
 export function App() {
@@ -23,11 +24,13 @@ export function App() {
       </header>
 
       <main className={styles.main}>
-        <Routes>
-          <Route path="/" element={<FundList />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<FundList />} />
+            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </ErrorBoundary>
       </main>
 
       <ToastContainer />
