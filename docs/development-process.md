@@ -137,3 +137,40 @@ All schemas use Zod v4 syntax with `.refine()` for custom validation rules and S
 ### Build Verification
 - TypeScript compilation: `tsc -b` passes with zero errors
 - Vite production build: generates optimized bundle (~117KB gzip JS, ~3KB gzip CSS)
+
+## Phase 7: Testing & Hardening
+
+### Test Infrastructure
+- Added Vitest with jsdom environment and `@testing-library/jest-dom` matchers
+- Configured via `vitest/config` import in `vite.config.ts` (avoids TS errors with Vite 7's `defineConfig`)
+- Test setup file at `src/test/setup.ts` loads jest-dom matchers globally
+- Added `test` and `test:watch` npm scripts
+
+### Unit Tests (56 tests across 8 files)
+
+**Validation Schemas:**
+- `buy.schema.test.ts` (8 tests): €10,000 limit enforcement, positive quantity, fractional quantities, fund-value-dependent limits
+- `sell.schema.test.ts` (7 tests): max quantity enforcement, boundary values
+- `transfer.schema.test.ts` (8 tests): same-fund rejection, missing toFundId, max quantity
+
+**Adapters:**
+- `fund.adapter.test.ts` (6 tests): profitability decimal→percentage conversion (×100), category label resolution, negative profitability, array mapping
+- `portfolio.adapter.test.ts` (7 tests): enrichment with/without fund data, default fallbacks, category grouping by CATEGORY_ORDER, alphabetical sorting within groups
+
+**Utilities:**
+- `format.test.ts` (10 tests): EUR/USD currency formatting, percentage formatting, number formatting with locale-aware assertions
+
+**API Services (mocked fetch):**
+- `funds.service.test.ts` (8 tests): URL construction with query params, POST body shape for buy/sell/transfer, error propagation, URL encoding of fund IDs
+- `portfolio.service.test.ts` (2 tests): endpoint verification, error handling
+
+### Notification Store Fix
+- Fixed timeout leak: manual dismiss via `removeNotification` now calls `clearTimeout` on the pending auto-dismiss timer
+- Timeout IDs tracked in a module-level `Map<string, ReturnType<typeof setTimeout>>` (side-effect, not UI state)
+- Timer entries cleaned up both on auto-dismiss expiry and manual removal
+
+### Error Boundary
+- Added `ErrorBoundary` class component wrapping `<Routes>` in `App.tsx`
+- Catches render errors in fund list and portfolio pages without crashing the header/navigation
+- Fallback UI: "Algo ha salido mal" message with reload button
+- Logs error and component stack to console for debugging

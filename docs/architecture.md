@@ -102,7 +102,7 @@ Portfolio (page) -> PortfolioGroup (category section) -> PortfolioItem (position
 
 ### 8. Notification Store with Auto-Dismiss
 
-Zustand store manages toast notifications with auto-dismissal after 4 seconds. Mutation hooks (buy/sell/transfer) push success/error notifications through the store. The `ToastContainer` component renders them with slide-in animation.
+Zustand store manages toast notifications with auto-dismissal after 4 seconds. Mutation hooks (buy/sell/transfer) push success/error notifications through the store. The `ToastContainer` component renders them with slide-in animation. Timeout IDs are tracked in a module-level `Map` so that manually dismissed notifications cancel their pending auto-dismiss timer (prevents stale cleanup calls).
 
 ## Responsive Strategy
 
@@ -118,3 +118,15 @@ Zustand store manages toast notifications with auto-dismissal after 4 seconds. M
 - **Query errors**: React Query handles retry logic (1 retry configured)
 - **Mutation errors**: Displayed via toast notifications through the Zustand notification store
 - **Form errors**: Displayed inline below fields via react-hook-form's error state
+- **Render errors**: Caught by `ErrorBoundary` class component wrapping `<Routes>` — prevents full-app crash, shows fallback UI with reload option
+
+## Testing Strategy
+
+| Layer | Tool | What's Tested |
+|-------|------|---------------|
+| **Validation** | Vitest + Zod | Schema factories with boundary values, dynamic limits, cross-field rules |
+| **Adapters** | Vitest | Data transformation (profitability ×100, category resolution, portfolio enrichment & grouping) |
+| **Utilities** | Vitest | Currency/percentage/number formatting with locale-aware assertions |
+| **Services** | Vitest + mocked `fetch` | URL construction, query params, POST bodies, error propagation |
+
+Tests run via `npm test` (Vitest with jsdom environment). Configuration lives in `vite.config.ts` using `vitest/config`'s `defineConfig`.
