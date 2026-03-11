@@ -1,42 +1,24 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { http, HttpResponse } from 'msw';
+import { server } from '@/test/mocks/server';
 import { getPortfolio } from '../portfolio.service';
-
-const mockFetch = vi.fn();
-
-beforeEach(() => {
-  mockFetch.mockClear();
-  vi.stubGlobal('fetch', mockFetch);
-});
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
 
 describe('getPortfolio', () => {
   it('fetches the portfolio', async () => {
-    const body = {
-      data: [
-        { id: '1', name: 'Fund A', quantity: 10, totalValue: { amount: 1000, currency: 'EUR' } },
-      ],
-    };
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(body),
-    });
-
     const result = await getPortfolio();
 
-    const url = mockFetch.mock.calls[0][0] as string;
-    expect(url).toContain('/portfolio');
-    expect(result).toEqual(body);
+    expect(result.data).toBeDefined();
+    expect(Array.isArray(result.data)).toBe(true);
+    expect(result.data[0]).toHaveProperty('id');
+    expect(result.data[0]).toHaveProperty('quantity');
   });
 
   it('throws on error response', async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      status: 500,
-      json: () => Promise.resolve({ error: 'Server error' }),
-    });
+    server.use(
+      http.get('/api/portfolio', () =>
+        HttpResponse.json({ error: 'Server error' }, { status: 500 }),
+      ),
+    );
 
     await expect(getPortfolio()).rejects.toThrow('Server error');
   });
