@@ -1,0 +1,19 @@
+.group {
+  margin-bottom: var(--space-lg);
+}
+
+.groupTitle {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: capitalize;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-bg);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-sm);
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+}

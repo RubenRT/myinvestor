@@ -1,0 +1,37 @@
+.info {
+  margin-bottom: var(--space-md);
+}
+
+.fundName {
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--space-xs);
+}
+
+.fundValue {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-md);
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+}
+
+.totalLabel {
+  color: var(--color-text-secondary);
+}
+
+.totalValue {
+  font-weight: 600;
+}
