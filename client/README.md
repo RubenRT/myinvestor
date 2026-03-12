@@ -1,24 +1,24 @@
-# MyInvestor - Front-end Challenge
+# MyInvestor — Front-end Challenge
 
-React front-end application for the MyInvestor investment fund management platform. Consumes the provided Express REST API to display funds, manage a portfolio, and execute buy/sell/transfer operations.
+Aplicación front-end en React para la plataforma de gestión de fondos de inversión de MyInvestor. Consume la API REST proporcionada (Express 5 + TypeScript) para mostrar fondos, gestionar una cartera y ejecutar operaciones de compra, venta y traspaso.
 
-## How to Run
+## Cómo correr el proyecto localmente
 
-### Prerequisites
-- Node.js >= 24.5.0
+### Requisitos previos
 
-### Start the API server
+- **Node.js** >= 24.5.0
+- **npm** o **yarn** (el proyecto incluye Yarn 4.5.1 como packageManager)
+
+### 1. Iniciar el servidor API
 
 ```bash
-# From the project root
+# Desde la raíz del proyecto
 npm start
-# or
-yarn start
 ```
 
-The API runs on `http://localhost:3000`.
+El servidor se levanta en `http://localhost:3000` con hot-reload (`node --watch`). La documentación Swagger está disponible en `http://localhost:3000/api-docs`.
 
-### Start the front-end
+### 2. Iniciar el cliente
 
 ```bash
 cd client
@@ -26,100 +26,144 @@ npm install
 npm run dev
 ```
 
-The front-end runs on `http://localhost:5173`. API calls are proxied to port 3000 automatically.
+El front-end se levanta en `http://localhost:5173`. Las llamadas a `/api/*` se redirigen automáticamente al puerto 3000 mediante el proxy de Vite.
 
-### Production build
+### 3. Build de producción
 
 ```bash
 cd client
-npm run build
-npm run preview
+npm run build    # Comprobación de tipos + build con Vite
+npm run preview  # Sirve el build en local
 ```
 
-## Features Implemented
+### 4. Tests
 
-### Fund Listing (`/`)
-- Paginated table displaying 80 funds (10 per page)
-- Sortable columns: name, currency, category, value, YTD, 1Y, 3Y, 5Y profitability
-- Sort state persisted in URL query parameters (`?page=2&sort=name:asc`)
-- Action menu per fund with "Buy" option
-- Responsive: horizontal scroll on mobile
+```bash
+# Tests unitarios e integración (Vitest)
+cd client
+npm test              # Ejecución única (~166 tests, ~4s)
+npm run test:watch    # Modo watch
 
-### Buy Fund
-- Modal dialog using native HTML `<dialog>` element
-- Form validation with react-hook-form + Zod:
-  - Quantity must be positive
-  - Total value cannot exceed 10,000 EUR
-- Live total calculation preview
-- Currency input with EUR suffix
-- Success/error toast notifications
+# Tests E2E (Playwright) — requiere ambos servidores corriendo
+npx playwright test   # Desde la raíz del proyecto (~15 tests)
+```
 
-### Portfolio (`/portfolio`)
-- Positions grouped by fund category (Mercado monetario, Global, Tecnologia, Salud)
-- Alphabetically sorted within each category
-- Shows total value and gain/loss percentage per position
-- Tabs: "Fondos" (active), "Ordenes" (placeholder), "Traspasos en curso" (placeholder)
-- Empty state with link to fund explorer
+---
 
-### Sell Fund
-- Modal with form validation:
-  - Quantity must be positive
-  - Cannot sell more than current holdings
-- Shows current position for reference
-- Success/error toast notifications
+## Funcionalidades implementadas
 
-### Transfer Fund
-- Transfer between portfolio positions
-- Destination restricted to funds already in portfolio
-- Form validation:
-  - Quantity must be positive
-  - Cannot transfer more than current holdings
-  - Cannot transfer to the same fund
-- Success/error toast notifications
+### Listado de fondos (`/`)
 
-## Technical Decisions
+- Tabla paginada con 80 fondos (10 por página)
+- **8 columnas ordenables**: nombre, símbolo, categoría, valor, YTD, 1A, 3A, 5A
+- Estado de paginación y ordenación persistido en la URL (`?page=2&sort=name:asc`), lo que permite compartir enlaces y navegar con el historial del navegador
+- Menú de acciones por fondo con opción "Comprar"
+- Scroll horizontal en móvil para mantener la legibilidad
 
-| Decision | Rationale |
-|----------|-----------|
-| **Vite** | Fast dev server, no SSR needed, native ESM support |
-| **React Query** | Server state management with caching, background refetching, mutation invalidation |
-| **Zustand** | Lightweight UI state (notifications only). Server state lives in React Query exclusively |
-| **React Hook Form + Zod** | Performant uncontrolled forms with type-safe validation schemas |
-| **CSS Modules** | Scoped styles, pure CSS as requested, no runtime cost |
-| **URL search params** | Pagination/sorting state survives refresh, is shareable, works with browser navigation |
-| **Native `<dialog>`** | Semantic HTML, built-in accessibility (focus trap, Escape key, backdrop) |
-| **Adapter pattern** | Transforms API data at boundaries, keeps components clean |
-| **Vite proxy** | Clean API URLs (`/api/funds`), avoids CORS config, deployment-friendly |
+### Compra de fondos
 
-## Project Structure
+- Modal nativo con `<dialog>` que muestra el nombre del fondo
+- Formulario con validación en tiempo real (React Hook Form + Zod):
+  - La cantidad debe ser mayor que 0
+  - El valor total no puede superar 10.000 €
+- Previsualización en vivo del importe total (cantidad × valor unitario)
+- Input de moneda con sufijo EUR
+- Notificaciones toast de éxito/error
+
+### Cartera (`/portfolio`)
+
+- Posiciones agrupadas por categoría: Mercado monetario, Global, Tecnología, Salud
+- Ordenación alfabética dentro de cada categoría
+- Muestra valor total y porcentaje de ganancia/pérdida (YTD) por posición
+- Interfaz con pestañas: "Fondos" (funcional), "Órdenes" (placeholder), "Traspasos en curso" (deshabilitado)
+- Estado vacío con enlace al explorador de fondos
+
+### Venta de fondos
+
+- Modal con validación:
+  - La cantidad debe ser mayor que 0
+  - No se puede vender más de lo que se posee
+- Notificaciones toast de éxito/error
+
+### Traspaso entre fondos
+
+- Traspaso entre posiciones de la cartera
+- Destino restringido a fondos ya presentes en la cartera (el fondo origen se excluye del selector)
+- Validación:
+  - La cantidad debe ser mayor que 0
+  - No se puede traspasar más de lo que se posee
+  - El fondo origen y destino deben ser diferentes
+- Notificaciones toast de éxito/error
+
+### Extras
+
+- Paginación inteligente con elipsis para navegación eficiente
+- Error boundary global con UI de fallback y botón de recarga
+- Formateo de moneda y porcentajes con locale `es-ES`
+- 181 tests en total (166 unitarios/integración + 15 E2E)
+
+---
+
+## Decisiones técnicas
+
+### Stack tecnológico
+
+| Tecnología | Versión | Justificación |
+|------------|---------|---------------|
+| **React** | 19 | Biblioteca UI moderna con hooks |
+| **Vite** | 7 | Dev server rápido con HMR, soporte nativo de ESM. |
+| **TypeScript** | 5.9 | Tipado estricto (`strict: true`) en todo el proyecto |
+| **React Router** | 7 | Enrutamiento cliente con `useSearchParams` para estado de paginación/ordenación en URL |
+| **React Query** | 5 | Gestión de estado del servidor con caché, refetch automático e invalidación tras mutaciones |
+| **Zustand** | 5 | Estado de UI ligero (solo notificaciones). El estado del servidor vive exclusivamente en React Query |
+| **React Hook Form + Zod** | 7 / 4 | Formularios no controlados (sin re-renders por pulsación de tecla) con validación type-safe |
+| **CSS Modules** | — | Estilos scoped por componente, CSS puro sin coste en runtime |
+| **Vitest + Testing Library** | 4 | Testing unitario/integración rápido con jsdom |
+| **MSW** | 2 | Mocking de red a nivel de service worker para tests |
+| **Playwright** | 1.58 | Tests E2E con Chromium |
+
+### Decisiones de arquitectura
+
+- **React Query como única fuente de verdad para datos del servidor**: todo el estado del servidor vive en la caché de React Query. Zustand se usa deliberadamente solo para estado de UI (notificaciones).
+
+- **Patrón Adapter en el API**: los servicios (`services/`) hacen llamadas puras a la API sin transformaciones. Los adaptadores (`adapters/`) transforman los datos: convierten decimales a porcentajes, códigos de categoría a etiquetas en español, y enriquecen las posiciones de la cartera cruzando datos con el listado de fondos.
+
+- **Schemas Zod**: las validaciones se crean con funciones factory (`createBuySchema(fundValue)`, `createSellSchema(maxQuantity)`) en lugar de schemas estáticos, permitiendo restricciones dinámicas basadas en el contexto (valor del fondo, cantidad en cartera).
+
+- **Hook factory para mutaciones** (`usePortfolioMutation`): centraliza la lógica de invalidación de caché e notificaciones, eliminando duplicación entre los hooks de compra, venta y traspaso.
+
+- **`<dialog>` nativo para modales**: HTML semántico sin dependencias de terceros para modales.
+
+- **Proxy de Vite**: las llamadas a `/api/*` se redirigen al servidor Express, evitando problemas de CORS en desarrollo y manteniendo URLs limpias.
+
+- **Estado en URL**: paginación y ordenación se almacenan en query params (`?page=2&sort=name:asc`), lo que permite compartir URLs, refrescar la página sin perder estado y usar la navegación del navegador (atrás/adelante).
+
+### Estructura del proyecto
 
 ```
 client/src/
-  types/          -- TypeScript interfaces
-  services/       -- API client and endpoint calls
-  adapters/       -- API response transformations
-  hooks/          -- React Query hooks (queries + mutations)
-  stores/         -- Zustand stores (UI state)
-  validation/     -- Zod form validation schemas
-  components/
-    ui/           -- Reusable: Button, Modal, CurrencyInput, Pagination, etc.
-    funds/        -- Fund list page, buy modal
-    portfolio/    -- Portfolio page, sell/transfer modals
-  utils/          -- Format helpers, constants
-  styles/         -- Global CSS, CSS custom properties
-```
+├── types/           — Interfaces TypeScript (Fund, Portfolio, API responses)
+├── services/        — Cliente API y llamadas a endpoints
+├── adapters/        — Transformaciones de respuestas de la API
+├── hooks/           — Hooks de React Query (queries + mutations)
+├── stores/          — Stores Zustand (estado de UI)
+├── validation/      — Schemas Zod para validación de formularios
+├── components/
+│   ├── ui/          — Componentes reutilizables (Button, Modal, Pagination, Toast, etc.)
+│   ├── funds/       — Listado de fondos, modal de compra
+│   └── portfolio/   — Cartera, modales de venta y traspaso
+├── utils/           — Helpers de formateo, constantes
+├── styles/          — CSS global, custom properties
+└── test/            — Setup de tests, fixtures, mocks MSW
 
-See [docs/](../docs/) for detailed architecture documentation.
+---
 
-## What I Would Improve With More Time
+## Qué mejoraría con más tiempo
 
-- **Tests**: Unit tests with Vitest + Testing Library for components, hooks, and adapters. E2E tests with Playwright for critical flows (buy/sell/transfer).
-- **Error boundaries**: React error boundary components for graceful error recovery.
-- **Loading states**: Skeleton screens instead of text-based loading indicators.
-- **Mobile swipe actions**: Swipe-to-reveal sell/transfer actions on portfolio items.
-- **Order history**: Functional "Ordenes" tab tracking buy/sell/transfer history.
-- **Search & filtering**: Filter funds by category, search by name.
-- **Dark mode**: CSS custom properties already in place, just need alternate values.
-- **Accessibility audit**: Full WCAG compliance review with screen reader testing.
-- **Performance**: Virtual scrolling for the fund list if dealing with larger datasets.
-- **Internationalization**: i18n setup for multi-language support.
+- **Skeleton screens**: reemplazar los indicadores de carga basados en texto por esqueletos animados que reflejen la estructura del contenido, mejorando la percepción de velocidad.
+- **Búsqueda y filtrado de fondos**: añadir filtro por categoría y búsqueda por nombre/símbolo en el listado de fondos.
+- **Virtual scrolling**: para datasets más grandes, implementar virtualización de la tabla (e.g., TanStack Virtual) para mantener el rendimiento.
+- **Internacionalización (i18n)**: preparar la app para múltiples idiomas con una librería como react-i18next, ya que actualmente las cadenas están hardcodeadas en español.
+- **Optimistic updates**: aplicar actualizaciones optimistas en las mutaciones de compra/venta para mejorar la experiencia percibida por el usuario, revertiendo si la API falla.
+- **CI/CD**: configurar un pipeline de integración continua que ejecute linting, tests unitarios y E2E en cada push/PR.
+- **Testing**: revisión profunda de todos los tests creados y la arquitectura creada para el testing.
